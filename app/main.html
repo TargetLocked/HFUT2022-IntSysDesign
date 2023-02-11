@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta name="description" content="智能应用系统设计">
+    <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1">
+    <meta itemprop="description" content="HFUT 2022 Intelligent System Design">
+    <meta itemprop="name" content="Intelligent System Design">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta id="theme-color" name="theme-color" content="#ffffff">
+    <base href="." target="_blank">
+
+    <title>人脸比对系统 (Demo)</title>
+
+    <link rel="stylesheet" href="main.css">
+
+<body>
+    <div id="container">
+        <h1>人脸比对系统 (Demo)</h1>
+        <video id="video-local" autoplay="" playsinline=""></video>
+        <button id="showVideo">打开摄像头</button>
+        <button id="stopVideo">关闭摄像头</button>
+        <button id="takeSnapshot">截取</button>
+        <button id="clearList">清除记录</button>
+        <canvas id="mainCanvas"></canvas>
+        <div id="list"
+            style="display: grid; grid-template-columns: repeat(auto-fill, 100px); column-gap: 20px; row-gap: 20px;">
+        </div>
+        <p>显示摄像头预览的内容，网页上由元素video来呈现。</p>
+        <p>点击打开摄像头按钮后，浏览器会询问是否允许，请点击“允许”。</p>
+        <div id="errorMsg"></div>
+        <div id="tipMsg">
+        </div>
+    </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/webrtc-adapter/8.2.0/adapter.js"></script>
+    <script src="main.js"></script>
