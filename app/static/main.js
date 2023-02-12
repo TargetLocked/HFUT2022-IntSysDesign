@@ -121,9 +121,31 @@ function takeSnapshot(e) {
   hasActivePic = true;
 }
 
+function useLocal(e) {
+  var file = document.getElementById('file').files[0];
+  const pattern = /^image/;
+  if (!pattern.test(file.type)) {
+    showErrMsg('无效的图片文件');
+    return;
+  }
+  var reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = function (e) {
+    var img = new Image();
+    img.src = e.target.result;
+    img.onload = function () {
+      console.log(img.width, img.height);
+      mCanvas.width = img.width;
+      mCanvas.height = img.height;
+      mCanvas.getContext('2d').drawImage(img, 0, 0, mCanvas.width, mCanvas.height);
+      hasActivePic = true;
+    };
+  };
+}
+
 function uploadSnapshot(e, isReserve) {
   if (hasActivePic === false) {
-    showErrMsg('照片为空，请先截取或选择本地图片');
+    showErrMsg('照片为空，请先截取画面或使用本地图片');
     return;
   }
 
@@ -138,7 +160,7 @@ function uploadSnapshot(e, isReserve) {
   divItem.style.display = "block";
 
   divItem.width = 100;
-  divItem.height = divItem.width * videoElem.videoHeight / videoElem.videoWidth; // 计算一下比例
+  divItem.height = divItem.width * mCanvas.height / mCanvas.width; // 计算一下比例
   c1.width = divItem.width;
   c1.height = divItem.height;
 
@@ -148,7 +170,7 @@ function uploadSnapshot(e, isReserve) {
   divItem.style.height = divItem.height + "px";
   console.log("div item size: ", divItem.width, divItem.height);
 
-  c1.getContext('2d').drawImage(videoElem, 0, 0, mCanvas.width, mCanvas.height, 0, 0, c1.width, c1.height);
+  c1.getContext('2d').drawImage(mCanvas, 0, 0, mCanvas.width, mCanvas.height, 0, 0, c1.width, c1.height);
 
   if (isReserve) {
     c2.innerHTML = "预留照片";
@@ -175,8 +197,9 @@ function clearList(e) {
 document.querySelector('#showVideo').addEventListener('click', e => openCamera(e));
 document.querySelector('#stopVideo').addEventListener('click', e => stopVideo(e));
 document.querySelector('#takeSnapshot').addEventListener('click', e => takeSnapshot(e));
+document.querySelector('#uploadPic').addEventListener('click', e => useLocal(e));
 document.querySelector('#reservePhoto').addEventListener('click', e => uploadSnapshot(e, true));
 document.querySelector('#comparePhoto').addEventListener('click', e => uploadSnapshot(e, false));
 document.querySelector('#clearList').addEventListener('click', e => clearList(e));
 
-showMsg("准备完毕")
+showMsg("准备完毕");

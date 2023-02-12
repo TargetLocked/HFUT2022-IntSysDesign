@@ -19,10 +19,16 @@
 <body>
     <div id="container">
         <h1>人脸比对系统 (Demo)</h1>
+        <p>显示摄像头预览的内容，网页上由元素video来呈现。</p>
+        <p>点击打开摄像头按钮后，浏览器会询问是否允许，请点击“允许”。</p>
         <video id="video-local" autoplay="" playsinline=""></video>
         <button id="showVideo">打开摄像头</button>
         <button id="stopVideo">关闭摄像头</button>
         <button id="takeSnapshot">截取画面</button>
+        <div>
+            <input id="file" type="file" />
+            <button id="uploadPic">使用本地图片</button>
+        </div>
         <button id="reservePhoto">上传并预留</button>
         <button id="comparePhoto">上传并比对</button>
         <button id="clearList">清除记录</button>
@@ -30,8 +36,6 @@
         <div id="list"
             style="display: grid; grid-template-columns: repeat(auto-fill, 100px); column-gap: 20px; row-gap: 20px;">
         </div>
-        <p>显示摄像头预览的内容，网页上由元素video来呈现。</p>
-        <p>点击打开摄像头按钮后，浏览器会询问是否允许，请点击“允许”。</p>
         <div id="errorMsg"></div>
         <div id="tipMsg">
         </div>
