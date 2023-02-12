@@ -75,7 +75,7 @@ function sendPhoto(photoData, isReserve, tagElem) {
   var data = { photo: photoData, reserve: isReserve };
   showMsg('上传照片并等待服务器处理...');
   XHR.addEventListener('error', function (event) {
-    showErrMsg('比对失败');
+    showErrMsg('处理失败');
   });
   XHR.open('POST', '/api', true);
   XHR.setRequestHeader("Content-type", "application/json");
@@ -83,7 +83,7 @@ function sendPhoto(photoData, isReserve, tagElem) {
   XHR.send(JSON.stringify(data));
   XHR.onreadystatechange = function () {
     if (XHR.readyState == 4 && XHR.status == 200) {
-      showMsg('比对完成');
+      showMsg('处理完成');
       var json = XHR.responseText;
       console.log(json);
       json = JSON.parse(json);
@@ -97,7 +97,7 @@ function sendPhoto(photoData, isReserve, tagElem) {
         else {
           const verdict = (json.result > 0.5);
           const verdictStr = (verdict ? "一致" : "不一致");
-          showMsg('比对结果：' + verdictStr);
+          showMsg('比对结果：' + verdictStr + ' (' + json.result + ')');
           tagElem.innerHTML = verdictStr;
           tagElem.style.color = (verdict ? 'green' : 'red');
         }
@@ -111,12 +111,23 @@ mCanvas.width = 480;
 mCanvas.height = 360;
 const list = document.querySelector('#list'); // 拿来存放多个元素
 
-function takeSnapshot(e, isReserve) {
+var hasActivePic = false;
+
+function takeSnapshot(e) {
   const videoElem = document.querySelector('video');
   mCanvas.width = videoElem.videoWidth;
   mCanvas.height = videoElem.videoHeight;
   mCanvas.getContext('2d').drawImage(videoElem, 0, 0, mCanvas.width, mCanvas.height);
+  hasActivePic = true;
+}
 
+function uploadSnapshot(e, isReserve) {
+  if (hasActivePic === false) {
+    showErrMsg('照片为空，请先截取或选择本地图片');
+    return;
+  }
+
+  const videoElem = document.querySelector('video');
   // 上传照片
   var c2 = document.createElement("p");
   sendPhoto(mCanvas.toDataURL(), isReserve, c2);
@@ -163,8 +174,9 @@ function clearList(e) {
 
 document.querySelector('#showVideo').addEventListener('click', e => openCamera(e));
 document.querySelector('#stopVideo').addEventListener('click', e => stopVideo(e));
-document.querySelector('#takeSnapshot').addEventListener('click', e => takeSnapshot(e, false));
-document.querySelector('#reservePhoto').addEventListener('click', e => takeSnapshot(e, true));
+document.querySelector('#takeSnapshot').addEventListener('click', e => takeSnapshot(e));
+document.querySelector('#reservePhoto').addEventListener('click', e => uploadSnapshot(e, true));
+document.querySelector('#comparePhoto').addEventListener('click', e => uploadSnapshot(e, false));
 document.querySelector('#clearList').addEventListener('click', e => clearList(e));
 
 showMsg("准备完毕")
