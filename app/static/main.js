@@ -1,5 +1,8 @@
 'use strict';
 
+const naiveSessionID = Math.round(Number.MAX_SAFE_INTEGER * Math.random());
+console.log('id = ' + naiveSessionID);
+
 const constraints = window.constraints = {
   audio: false,
   video: true
@@ -71,31 +74,32 @@ function sendPhoto(photoData, isReserve, tagElem) {
   var XHR = new XMLHttpRequest();
   var data = { photo: photoData, reserve: isReserve };
   showMsg('正在上传照片...');
-  XHR.addEventListener('load', function (event) {
-    showMsg('上传照片成功');
-  });
   XHR.addEventListener('error', function (event) {
     showErrMsg('上传照片失败');
   });
   XHR.open('POST', '/api', true);
   XHR.setRequestHeader("Content-type", "application/json");
+  XHR.setRequestHeader("App-SessionID", naiveSessionID);
   XHR.send(JSON.stringify(data));
   XHR.onreadystatechange = function () {
     if (XHR.readyState == 4 && XHR.status == 200) {
+      showMsg('上传照片成功');
       var json = XHR.responseText;
       console.log(json);
       json = JSON.parse(json);
       if (isReserve === false) {
         if (json.result === undefined) {
-          const verdictStr = "未预留照片";
-          showMsg('无法比对，请先预留照片');
+          const verdictStr = "尚未预留照片";
+          showErrMsg('无法比对，请先预留照片');
           tagElem.innerHTML = verdictStr;
+          tagElem.style.color = 'red';
         }
         else {
           const verdict = (json.result > 0.5);
           const verdictStr = (verdict ? "一致" : "不一致");
           showMsg('比对结果：' + verdictStr);
           tagElem.innerHTML = verdictStr;
+          tagElem.style.color = (verdict ? 'green' : 'red');
         }
       }
     }
