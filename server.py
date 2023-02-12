@@ -3,7 +3,7 @@ import os
 import aiohttp_jinja2
 import jinja2
 import json
-from api import *
+import api
 
 routes = web.RouteTableDef()
 resdir = os.path.join(os.path.dirname(__file__), 'app')
@@ -18,6 +18,7 @@ async def get(request):
 
 
 reserved = {}
+
 
 @routes.post('/api')
 async def post(request):
@@ -35,12 +36,13 @@ async def post(request):
         return web.Response(status=400, reason='Missing field \'reserve\'')
     if 'photo' not in content:
         return web.Response(status=400, reason='Missing field \'photo\'')
+
     body = {}
     if content['reserve'] == True:
         reserved[session] = content['photo']
     else:
         if session in reserved:
-            body['result'] = 0.114514
+            body['result'] = api.predict(reserved[session], content['photo'])
     return web.Response(status=200, text=json.dumps(body))
 
 
@@ -49,6 +51,7 @@ routes.static('/static', os.path.join(resdir, 'static'))
 
 def main():
     app.add_routes(routes)
+    api.init_model()
     web.run_app(app)
 
 

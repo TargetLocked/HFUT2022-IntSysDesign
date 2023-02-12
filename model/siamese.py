@@ -4,8 +4,8 @@ import torch
 import torch.backends.cudnn as cudnn
 from PIL import Image
 
-from nets.siamese import Siamese as siamese
-from utils.utils import letterbox_image, preprocess_input, cvtColor
+from .nets.siamese import Siamese as siamese
+from .utils.utils import letterbox_image, preprocess_input, cvtColor
 
 class Siamese(object):
     _defaults = {
@@ -31,11 +31,11 @@ class Siamese(object):
         for name, value in kwargs.items():
             setattr(self, name, value)
         self.generate()
-        
+
 
     def generate(self):
 
- 
+
         device  = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         # print(device)
 
@@ -47,7 +47,7 @@ class Siamese(object):
             self.net = torch.nn.DataParallel(self.net)
             cudnn.benchmark = True
             self.net = self.net.cuda()
-    
+
     def letterbox_image(self, image, size):
         image   = image.convert("RGB")
         iw, ih  = image.size
@@ -62,15 +62,15 @@ class Siamese(object):
         if self.input_shape[-1]==1:
             new_image = new_image.convert("L")
         return new_image
-        
+
     def detect_image(self, image_1, image_2):
 
         image_1 = cvtColor(image_1)
         image_2 = cvtColor(image_2)
-   
+
         image_1 = letterbox_image(image_1, [self.input_shape[1], self.input_shape[0]], self.letterbox_image)
         image_2 = letterbox_image(image_2, [self.input_shape[1], self.input_shape[0]], self.letterbox_image)
-        
+
 
         photo_1  = preprocess_input(np.array(image_1, np.float32))
         photo_2  = preprocess_input(np.array(image_2, np.float32))
@@ -79,11 +79,11 @@ class Siamese(object):
 
             photo_1 = torch.from_numpy(np.expand_dims(np.transpose(photo_1, (2, 0, 1)), 0)).type(torch.FloatTensor)
             photo_2 = torch.from_numpy(np.expand_dims(np.transpose(photo_2, (2, 0, 1)), 0)).type(torch.FloatTensor)
-            
+
             if self.cuda:
                 photo_1 = photo_1.cuda()
                 photo_2 = photo_2.cuda()
-                
+
 
             output = self.net([photo_1, photo_2])[0]
             output = torch.nn.Sigmoid()(output)

@@ -73,9 +73,9 @@ function stopVideo(e) {
 function sendPhoto(photoData, isReserve, tagElem) {
   var XHR = new XMLHttpRequest();
   var data = { photo: photoData, reserve: isReserve };
-  showMsg('正在上传照片...');
+  showMsg('上传照片并等待服务器处理...');
   XHR.addEventListener('error', function (event) {
-    showErrMsg('上传照片失败');
+    showErrMsg('比对失败');
   });
   XHR.open('POST', '/api', true);
   XHR.setRequestHeader("Content-type", "application/json");
@@ -83,9 +83,9 @@ function sendPhoto(photoData, isReserve, tagElem) {
   XHR.send(JSON.stringify(data));
   XHR.onreadystatechange = function () {
     if (XHR.readyState == 4 && XHR.status == 200) {
-      showMsg('上传照片成功');
+      showMsg('比对成功');
       var json = XHR.responseText;
-      console.log(json);
+      // console.log(json);
       json = JSON.parse(json);
       if (isReserve === false) {
         if (json.result === undefined) {
@@ -143,7 +143,7 @@ function takeSnapshot(e, isReserve) {
     c2.innerHTML = "预留照片";
   }
   else {
-    c2.innerHTML = "等待结果";
+    c2.innerHTML = "等待服务器";
   }
   c2.className = "caption";
 
