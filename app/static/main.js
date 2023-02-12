@@ -1,6 +1,6 @@
 'use strict';
 
-const naiveSessionID = Math.round(Number.MAX_SAFE_INTEGER * Math.random());
+var naiveSessionID = Math.round(Number.MAX_SAFE_INTEGER * Math.random());
 console.log('id = ' + naiveSessionID);
 
 const constraints = window.constraints = {
@@ -158,6 +158,7 @@ function clearList(e) {
     list.removeChild(child);
     child = list.lastElementChild;
   }
+  naiveSessionID = Math.round(Number.MAX_SAFE_INTEGER * Math.random());
 }
 
 document.querySelector('#showVideo').addEventListener('click', e => openCamera(e));
