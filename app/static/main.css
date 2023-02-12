@@ -148,6 +148,11 @@ p.borderBelow {
   padding: 0 0 20px 0;
 }
 
+p.caption {
+  margin: 0;
+  font-style: italic;
+  font-size: smaller;
+}
 section p:last-of-type {
   margin: 0;
 }

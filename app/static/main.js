@@ -71,32 +71,75 @@ function stopVideo(e) {
   videoElem.srcObject = null;
 }
 
+function sendPhoto(photoData, isReserve, tagElem) {
+  var XHR = new XMLHttpRequest();
+  var data = { photo: photoData, reserve: isReserve };
+  XHR.addEventListener('load', function (event) {
+    showMsg('上传照片成功');
+  });
+  XHR.addEventListener('error', function (event) {
+    showErrMsg('上传照片失败');
+  });
+  XHR.open('POST', 'https://httpbin.org/post', true);
+  XHR.setRequestHeader("Content-type", "application/json");
+  XHR.send(JSON.stringify(data));
+  XHR.onreadystatechange = function () {
+    if (XHR.readyState == 4 && XHR.status == 200) {
+      var json = XHR.responseText;
+      console.log(json);
+      json = JSON.parse(json);
+      // if (isReserve === false) {
+      //   const verdict = (json.result > 0.5);
+      //   const verdictStr = (verdict ? "一致" : "不一致");
+      //   tagElem.innerHTML = verdictStr;
+      // }
+    }
+  };
+}
+
 const mCanvas = window.canvas = document.querySelector('#mainCanvas');
 mCanvas.width = 480;
 mCanvas.height = 360;
 const list = document.querySelector('#list'); // 拿来存放多个元素
 
-function takeSnapshot(e) {
+function takeSnapshot(e, isReserve) {
   const videoElem = document.querySelector('video');
   mCanvas.width = videoElem.videoWidth;
   mCanvas.height = videoElem.videoHeight;
   mCanvas.getContext('2d').drawImage(videoElem, 0, 0, mCanvas.width, mCanvas.height);
 
+  // 上传照片
+  var c2 = document.createElement("p");
+  sendPhoto(mCanvas.toDataURL(), isReserve, c2);
+
   // 新增1张
   var divItem = document.createElement("div");
+  var c1 = document.createElement("canvas");
   divItem.style.display = "block";
+
   divItem.width = 100;
   divItem.height = divItem.width * videoElem.videoHeight / videoElem.videoWidth; // 计算一下比例
+  c1.width = divItem.width;
+  c1.height = divItem.height;
+
+  divItem.height = divItem.height + 20;
+
   divItem.style.width = divItem.width + "px";
   divItem.style.height = divItem.height + "px";
   console.log("div item size: ", divItem.width, divItem.height);
 
-  var c1 = document.createElement("canvas");
-  c1.width = divItem.width;
-  c1.height = divItem.height;
   c1.getContext('2d').drawImage(videoElem, 0, 0, mCanvas.width, mCanvas.height, 0, 0, c1.width, c1.height);
 
+  if (isReserve) {
+    c2.innerHTML = "预留照片";
+  }
+  else {
+    c2.innerHTML = "等待结果";
+  }
+  c2.className = "caption";
+
   divItem.appendChild(c1);
+  divItem.appendChild(c2);
   list.appendChild(divItem);
 }
 
@@ -110,7 +153,8 @@ function clearList(e) {
 
 document.querySelector('#showVideo').addEventListener('click', e => openCamera(e));
 document.querySelector('#stopVideo').addEventListener('click', e => stopVideo(e));
-document.querySelector('#takeSnapshot').addEventListener('click', e => takeSnapshot(e));
+document.querySelector('#takeSnapshot').addEventListener('click', e => takeSnapshot(e, false));
+document.querySelector('#reservePhoto').addEventListener('click', e => takeSnapshot(e, true));
 document.querySelector('#clearList').addEventListener('click', e => clearList(e));
 
 showMsg("准备完毕")
