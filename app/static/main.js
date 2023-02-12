@@ -190,6 +190,11 @@ function clearList(e) {
     list.removeChild(child);
     child = list.lastElementChild;
   }
+  child = document.querySelector('#tipMsg').lastElementChild;
+  while (child) {
+    list.removeChild(child);
+    child = list.lastElementChild;
+  }
   naiveSessionID = Math.round(Number.MAX_SAFE_INTEGER * Math.random());
 }
 
