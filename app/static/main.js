@@ -1,7 +1,3 @@
-/**
- * 显示本地摄像头的视频
- */
-
 'use strict';
 
 const constraints = window.constraints = {
@@ -43,7 +39,7 @@ function showMsg(msg) {
 
 async function openCamera(e) {
   try {
-    showMsg('正在打开摄像头');
+    showMsg('正在打开摄像头...');
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
     showMsg('获取到了stream');
     gotStream(stream);
@@ -74,13 +70,14 @@ function stopVideo(e) {
 function sendPhoto(photoData, isReserve, tagElem) {
   var XHR = new XMLHttpRequest();
   var data = { photo: photoData, reserve: isReserve };
+  showMsg('正在上传照片...');
   XHR.addEventListener('load', function (event) {
     showMsg('上传照片成功');
   });
   XHR.addEventListener('error', function (event) {
     showErrMsg('上传照片失败');
   });
-  XHR.open('POST', 'https://httpbin.org/post', true);
+  XHR.open('POST', '/api', true);
   XHR.setRequestHeader("Content-type", "application/json");
   XHR.send(JSON.stringify(data));
   XHR.onreadystatechange = function () {
@@ -88,11 +85,19 @@ function sendPhoto(photoData, isReserve, tagElem) {
       var json = XHR.responseText;
       console.log(json);
       json = JSON.parse(json);
-      // if (isReserve === false) {
-      //   const verdict = (json.result > 0.5);
-      //   const verdictStr = (verdict ? "一致" : "不一致");
-      //   tagElem.innerHTML = verdictStr;
-      // }
+      if (isReserve === false) {
+        if (json.result === undefined) {
+          const verdictStr = "未预留照片";
+          showMsg('无法比对，请先预留照片');
+          tagElem.innerHTML = verdictStr;
+        }
+        else {
+          const verdict = (json.result > 0.5);
+          const verdictStr = (verdict ? "一致" : "不一致");
+          showMsg('比对结果：' + verdictStr);
+          tagElem.innerHTML = verdictStr;
+        }
+      }
     }
   };
 }
