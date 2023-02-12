@@ -23,12 +23,11 @@ function onErr(error) {
   } else if (error.name === 'NotAllowedError') {
     showErrMsg('请允许浏览器打开摄像头');
   }
-  showErrMsg(`getUserMedia error: ${error.name}`, error);
+  console.log(`getUserMedia error: ${error.name}`, error);
 }
 
 function showErrMsg(msg, error) {
-  const errorElement = document.querySelector('#errorMsg');
-  errorElement.innerHTML += `<p>${msg}</p>`;
+  alert(msg);
   if (typeof error !== 'undefined') {
     console.error(error);
   }
