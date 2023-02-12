@@ -83,9 +83,9 @@ function sendPhoto(photoData, isReserve, tagElem) {
   XHR.send(JSON.stringify(data));
   XHR.onreadystatechange = function () {
     if (XHR.readyState == 4 && XHR.status == 200) {
-      showMsg('比对成功');
+      showMsg('比对完成');
       var json = XHR.responseText;
-      // console.log(json);
+      console.log(json);
       json = JSON.parse(json);
       if (isReserve === false) {
         if (json.result === undefined) {

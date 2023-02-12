@@ -39,7 +39,7 @@ async def post(request):
 
     body = {}
     if content['reserve'] == True:
-        reserved[session] = content['photo']
+        reserved[session] = api.url_to_img(content['photo'])
     else:
         if session in reserved:
             body['result'] = api.predict(reserved[session], content['photo'])

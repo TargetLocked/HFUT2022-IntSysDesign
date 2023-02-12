@@ -19,15 +19,16 @@ def _get_img(img_path):
     return img
 
 
-def predict(url1, url2):
+def predict(img, url):
     global _model
-    img1 = _get_img(_url_to_io(url1))
-    img2 = _get_img(_url_to_io(url2))
-
-    probability = _model.detect_image(img1, img2).item()
+    probability = _model.detect_image(img, url_to_img(url)).item()
     return round(probability, 3)
 
 
 def _url_to_io(url):
     buf = urllib.request.urlopen(url).read()
     return io.BytesIO(buf)
+
+
+def url_to_img(url):
+    return _get_img(_url_to_io(url))
