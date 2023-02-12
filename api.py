@@ -21,6 +21,7 @@ def _get_img(img_path):
 
 def predict(img, url):
     global _model
+    assert isinstance(_model, Siamese)
     probability = _model.detect_image(img, url_to_img(url)).item()
     return round(probability, 3)
 
